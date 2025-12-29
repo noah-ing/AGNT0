@@ -1,0 +1,66 @@
+{
+  "id": "template-web-scraper",
+  "name": "Web Scraper",
+  "description": "Scrape data from websites and save to JSON",
+  "category": "Data Collection",
+  "tags": ["scraping", "web", "data"],
+  "workflow": {
+    "name": "Web Scraper Workflow",
+    "description": "Scrapes a website and extracts structured data",
+    "nodes": [
+      {
+        "id": "input-1",
+        "type": "input",
+        "position": { "x": 100, "y": 200 },
+        "data": {
+          "label": "URL Input",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "url": { "type": "string" },
+              "selectors": { "type": "object" }
+            }
+          }
+        }
+      },
+      {
+        "id": "scraper-1",
+        "type": "tool",
+        "position": { "x": 400, "y": 200 },
+        "data": {
+          "label": "Scrape Page",
+          "toolId": "scraper",
+          "toolConfig": {
+            "extractText": true,
+            "extractLinks": true
+          }
+        }
+      },
+      {
+        "id": "agent-1",
+        "type": "agent",
+        "position": { "x": 700, "y": 200 },
+        "data": {
+          "label": "Extract & Structure",
+          "provider": "openai",
+          "model": "gpt-4o-mini",
+          "systemPrompt": "You are a data extraction expert. Extract structured data from the provided HTML content. Output valid JSON.",
+          "temperature": 0.1
+        }
+      },
+      {
+        "id": "output-1",
+        "type": "output",
+        "position": { "x": 1000, "y": 200 },
+        "data": {
+          "label": "Extracted Data"
+        }
+      }
+    ],
+    "edges": [
+      { "id": "e1", "source": "input-1", "target": "scraper-1", "type": "smoothstep" },
+      { "id": "e2", "source": "scraper-1", "target": "agent-1", "type": "smoothstep" },
+      { "id": "e3", "source": "agent-1", "target": "output-1", "type": "smoothstep" }
+    ]
+  }
+}

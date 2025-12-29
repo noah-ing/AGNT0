@@ -1,0 +1,115 @@
+{
+  "id": "template-code-generator",
+  "name": "AI Code Generator",
+  "description": "Generate, test, and iterate code from natural language descriptions",
+  "category": "Development",
+  "tags": ["code", "ai", "development"],
+  "workflow": {
+    "name": "AI Code Generator",
+    "description": "Uses multiple AI models to plan, generate, test, and refine code",
+    "nodes": [
+      {
+        "id": "input-1",
+        "type": "input",
+        "position": { "x": 100, "y": 200 },
+        "data": {
+          "label": "Code Request",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "description": { "type": "string" },
+              "language": { "type": "string" },
+              "requirements": { "type": "array" }
+            }
+          }
+        }
+      },
+      {
+        "id": "planner-1",
+        "type": "agent",
+        "position": { "x": 350, "y": 200 },
+        "data": {
+          "label": "Plan Architecture",
+          "provider": "anthropic",
+          "model": "claude-sonnet-4-20250514",
+          "systemPrompt": "You are a software architect. Create a detailed implementation plan for the requested code. Include file structure, key functions, and data flow. Output as structured JSON.",
+          "temperature": 0.3
+        }
+      },
+      {
+        "id": "generator-1",
+        "type": "agent",
+        "position": { "x": 600, "y": 200 },
+        "data": {
+          "label": "Generate Code",
+          "provider": "anthropic",
+          "model": "claude-sonnet-4-20250514",
+          "systemPrompt": "You are an expert programmer. Generate complete, production-ready code based on the architecture plan. Include proper error handling, documentation, and follow best practices. Output each file with its content.",
+          "temperature": 0.2,
+          "maxTokens": 4096
+        }
+      },
+      {
+        "id": "tester-1",
+        "type": "agent",
+        "position": { "x": 850, "y": 200 },
+        "data": {
+          "label": "Generate Tests",
+          "provider": "openai",
+          "model": "gpt-4o",
+          "systemPrompt": "You are a QA engineer. Generate comprehensive test cases for the provided code. Include unit tests, edge cases, and integration tests where applicable.",
+          "temperature": 0.2
+        }
+      },
+      {
+        "id": "code-1",
+        "type": "code",
+        "position": { "x": 1100, "y": 200 },
+        "data": {
+          "label": "Run Tests",
+          "language": "javascript",
+          "code": "// Execute tests and collect results\nconst testResults = { passed: 0, failed: 0, tests: [] };\n// Test execution logic here\nresult = testResults;"
+        }
+      },
+      {
+        "id": "condition-1",
+        "type": "condition",
+        "position": { "x": 1350, "y": 200 },
+        "data": {
+          "label": "Tests Pass?",
+          "condition": "input.failed === 0"
+        }
+      },
+      {
+        "id": "refiner-1",
+        "type": "agent",
+        "position": { "x": 1600, "y": 100 },
+        "data": {
+          "label": "Refine Code",
+          "provider": "anthropic",
+          "model": "claude-sonnet-4-20250514",
+          "systemPrompt": "Review the code and test results. Fix any issues and improve code quality. Ensure all tests pass.",
+          "temperature": 0.3
+        }
+      },
+      {
+        "id": "output-1",
+        "type": "output",
+        "position": { "x": 1600, "y": 300 },
+        "data": {
+          "label": "Generated Code"
+        }
+      }
+    ],
+    "edges": [
+      { "id": "e1", "source": "input-1", "target": "planner-1", "type": "smoothstep" },
+      { "id": "e2", "source": "planner-1", "target": "generator-1", "type": "smoothstep" },
+      { "id": "e3", "source": "generator-1", "target": "tester-1", "type": "smoothstep" },
+      { "id": "e4", "source": "tester-1", "target": "code-1", "type": "smoothstep" },
+      { "id": "e5", "source": "code-1", "target": "condition-1", "type": "smoothstep" },
+      { "id": "e6", "source": "condition-1", "target": "refiner-1", "type": "smoothstep", "sourceHandle": "false" },
+      { "id": "e7", "source": "condition-1", "target": "output-1", "type": "smoothstep", "sourceHandle": "true" },
+      { "id": "e8", "source": "refiner-1", "target": "tester-1", "type": "smoothstep" }
+    ]
+  }
+}

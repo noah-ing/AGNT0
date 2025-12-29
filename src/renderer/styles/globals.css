@@ -1,0 +1,256 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #12121a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2a2a3a;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3a4a;
+}
+
+/* Base styles */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  background: #0a0a0f;
+  color: #ffffff;
+}
+
+/* React Flow customization */
+.react-flow__background {
+  background-color: #0a0a0f !important;
+}
+
+.react-flow__minimap {
+  background-color: #15151f !important;
+  border: 1px solid #2a2a3a !important;
+  border-radius: 8px !important;
+}
+
+.react-flow__minimap-mask {
+  fill: rgba(0, 212, 255, 0.1) !important;
+}
+
+.react-flow__controls {
+  background: #15151f !important;
+  border: 1px solid #2a2a3a !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+}
+
+.react-flow__controls-button {
+  background: #1a1a25 !important;
+  border: none !important;
+  border-bottom: 1px solid #2a2a3a !important;
+  color: #a0a0b0 !important;
+}
+
+.react-flow__controls-button:hover {
+  background: #252530 !important;
+  color: #00d4ff !important;
+}
+
+.react-flow__controls-button svg {
+  fill: currentColor !important;
+}
+
+.react-flow__edge-path {
+  stroke: #3a3a4a !important;
+  stroke-width: 2 !important;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: #00d4ff !important;
+}
+
+.react-flow__edge.animated .react-flow__edge-path {
+  stroke-dasharray: 5 !important;
+  animation: edge-flow 1s linear infinite !important;
+}
+
+@keyframes edge-flow {
+  from {
+    stroke-dashoffset: 10;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Custom node styles */
+.agnt0-node {
+  background: linear-gradient(180deg, rgba(26, 26, 37, 0.95) 0%, rgba(21, 21, 31, 0.98) 100%);
+  border: 1px solid #2a2a3a;
+  border-radius: 12px;
+  min-width: 200px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+}
+
+.agnt0-node:hover {
+  border-color: #3a3a4a;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.agnt0-node.selected {
+  border-color: #00d4ff;
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+.agnt0-node.running {
+  animation: node-pulse 1.5s ease-in-out infinite;
+  border-color: #00ff88;
+  box-shadow: 0 0 25px rgba(0, 255, 136, 0.4);
+}
+
+.agnt0-node.completed {
+  border-color: #00ff88;
+}
+
+.agnt0-node.error {
+  border-color: #ff4444;
+  box-shadow: 0 0 20px rgba(255, 68, 68, 0.3);
+}
+
+@keyframes node-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 25px rgba(0, 255, 136, 0.4);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 35px rgba(0, 255, 136, 0.6);
+  }
+}
+
+/* Handle styles */
+.react-flow__handle {
+  width: 12px !important;
+  height: 12px !important;
+  border: 2px solid #3a3a4a !important;
+  background: #1a1a25 !important;
+  transition: all 0.2s ease !important;
+}
+
+.react-flow__handle:hover {
+  border-color: #00d4ff !important;
+  background: #00d4ff !important;
+  transform: scale(1.2) !important;
+}
+
+.react-flow__handle-left {
+  left: -6px !important;
+}
+
+.react-flow__handle-right {
+  right: -6px !important;
+}
+
+.react-flow__handle-top {
+  top: -6px !important;
+}
+
+.react-flow__handle-bottom {
+  bottom: -6px !important;
+}
+
+/* Connection line */
+.react-flow__connection-line {
+  stroke: #00d4ff !important;
+  stroke-width: 2 !important;
+}
+
+/* Selection box */
+.react-flow__selection {
+  background: rgba(0, 212, 255, 0.1) !important;
+  border: 1px solid #00d4ff !important;
+}
+
+/* Glow effects */
+.glow-blue {
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+}
+
+.glow-green {
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+}
+
+.glow-purple {
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+}
+
+.glow-pink {
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.5);
+}
+
+/* Text glow */
+.text-glow-blue {
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.text-glow-green {
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #00d4ff 0%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Button styles */
+.cyber-button {
+  @apply px-4 py-2 rounded-lg font-medium transition-all duration-200;
+  @apply bg-cyber-bg-tertiary border border-cyber-border-default;
+  @apply hover:border-cyber-accent-blue hover:shadow-cyber-glow;
+  @apply active:scale-95;
+}
+
+.cyber-button-primary {
+  @apply cyber-button;
+  @apply bg-gradient-to-r from-cyber-accent-blue to-cyber-accent-purple;
+  @apply border-transparent text-white;
+  @apply hover:shadow-cyber-glow-lg;
+}
+
+/* Input styles */
+.cyber-input {
+  @apply w-full px-4 py-2 rounded-lg;
+  @apply bg-cyber-bg-secondary border border-cyber-border-default;
+  @apply text-cyber-text-primary placeholder-cyber-text-muted;
+  @apply focus:outline-none focus:border-cyber-accent-blue focus:shadow-cyber-glow;
+  @apply transition-all duration-200;
+}
+
+/* Card styles */
+.cyber-card {
+  @apply rounded-xl p-4;
+  @apply bg-cyber-bg-card border border-cyber-border-default;
+  @apply shadow-lg;
+}
+
+/* Panel styles */
+.cyber-panel {
+  @apply bg-cyber-bg-secondary border-cyber-border-default;
+}

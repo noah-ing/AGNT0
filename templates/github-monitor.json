@@ -1,0 +1,86 @@
+{
+  "id": "template-github-monitor",
+  "name": "GitHub Issue Monitor",
+  "description": "Monitor GitHub repo issues and summarize new ones",
+  "category": "Integration",
+  "tags": ["github", "monitoring", "automation"],
+  "workflow": {
+    "name": "GitHub Issue Monitor",
+    "description": "Fetches new issues from a GitHub repository and provides AI-powered summaries",
+    "nodes": [
+      {
+        "id": "input-1",
+        "type": "input",
+        "position": { "x": 100, "y": 200 },
+        "data": {
+          "label": "Repo Config",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "owner": { "type": "string" },
+              "repo": { "type": "string" }
+            }
+          }
+        }
+      },
+      {
+        "id": "github-1",
+        "type": "tool",
+        "position": { "x": 350, "y": 200 },
+        "data": {
+          "label": "List Issues",
+          "toolId": "github",
+          "toolConfig": {
+            "action": "listIssues"
+          }
+        }
+      },
+      {
+        "id": "condition-1",
+        "type": "condition",
+        "position": { "x": 600, "y": 200 },
+        "data": {
+          "label": "Has Issues?",
+          "condition": "input.data && input.data.length > 0"
+        }
+      },
+      {
+        "id": "agent-1",
+        "type": "agent",
+        "position": { "x": 850, "y": 100 },
+        "data": {
+          "label": "Summarize Issues",
+          "provider": "openai",
+          "model": "gpt-4o-mini",
+          "systemPrompt": "Summarize these GitHub issues concisely. For each issue, provide: title, key points, suggested priority (high/medium/low), and recommended action. Format as a clean list.",
+          "temperature": 0.3
+        }
+      },
+      {
+        "id": "transform-1",
+        "type": "transform",
+        "position": { "x": 850, "y": 300 },
+        "data": {
+          "label": "No Issues",
+          "transform": "{ message: 'No new issues found', timestamp: new Date().toISOString() }"
+        }
+      },
+      {
+        "id": "output-1",
+        "type": "output",
+        "position": { "x": 1100, "y": 200 },
+        "data": {
+          "label": "Summary"
+        }
+      }
+    ],
+    "edges": [
+      { "id": "e1", "source": "input-1", "target": "github-1", "type": "smoothstep" },
+      { "id": "e2", "source": "github-1", "target": "condition-1", "type": "smoothstep" },
+      { "id": "e3", "source": "condition-1", "target": "agent-1", "type": "smoothstep", "sourceHandle": "true" },
+      { "id": "e4", "source": "condition-1", "target": "transform-1", "type": "smoothstep", "sourceHandle": "false" },
+      { "id": "e5", "source": "agent-1", "target": "output-1", "type": "smoothstep" },
+      { "id": "e6", "source": "transform-1", "target": "output-1", "type": "smoothstep" }
+    ]
+  }
+}

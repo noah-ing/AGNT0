@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  agnt0:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: agnt0
+    ports:
+      - "3001:3001"
+    volumes:
+      - agnt0-data:/data
+      - ./config:/app/config:ro
+    environment:
+      - NODE_ENV=production
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+    restart: unless-stopped
+    networks:
+      - agnt0-network
+
+  # Optional: Ollama for local LLM inference
+  ollama:
+    image: ollama/ollama:latest
+    container_name: agnt0-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    restart: unless-stopped
+    networks:
+      - agnt0-network
+    profiles:
+      - ollama
+
+  # Optional: Redis for caching
+  redis:
+    image: redis:alpine
+    container_name: agnt0-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    networks:
+      - agnt0-network
+    profiles:
+      - cache
+
+volumes:
+  agnt0-data:
+  ollama-data:
+  redis-data:
+
+networks:
+  agnt0-network:
+    driver: bridge

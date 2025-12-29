@@ -1,0 +1,110 @@
+{
+  "id": "template-research-agent",
+  "name": "Research Agent",
+  "description": "Research a topic, synthesize information, and generate a report",
+  "category": "AI Agents",
+  "tags": ["research", "ai", "report"],
+  "workflow": {
+    "name": "Research Agent Workflow",
+    "description": "Researches a topic using multiple sources and generates a comprehensive report",
+    "nodes": [
+      {
+        "id": "input-1",
+        "type": "input",
+        "position": { "x": 100, "y": 250 },
+        "data": {
+          "label": "Research Topic",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "topic": { "type": "string" },
+              "depth": { "type": "string", "enum": ["brief", "moderate", "deep"] }
+            }
+          }
+        }
+      },
+      {
+        "id": "planner-1",
+        "type": "agent",
+        "position": { "x": 350, "y": 250 },
+        "data": {
+          "label": "Research Planner",
+          "provider": "anthropic",
+          "model": "claude-sonnet-4-20250514",
+          "systemPrompt": "You are a research planning expert. Given a topic, create a detailed research plan with specific search queries and sources to investigate. Output as JSON with 'queries' array.",
+          "temperature": 0.3
+        }
+      },
+      {
+        "id": "loop-1",
+        "type": "loop",
+        "position": { "x": 600, "y": 250 },
+        "data": {
+          "label": "For Each Query",
+          "loopType": "forEach"
+        }
+      },
+      {
+        "id": "http-1",
+        "type": "http",
+        "position": { "x": 850, "y": 150 },
+        "data": {
+          "label": "Search API",
+          "method": "GET",
+          "url": "https://api.search.example.com/search?q={{query}}"
+        }
+      },
+      {
+        "id": "scraper-1",
+        "type": "tool",
+        "position": { "x": 850, "y": 350 },
+        "data": {
+          "label": "Scrape Results",
+          "toolId": "scraper",
+          "toolConfig": {
+            "extractText": true
+          }
+        }
+      },
+      {
+        "id": "merge-1",
+        "type": "merge",
+        "position": { "x": 1100, "y": 250 },
+        "data": {
+          "label": "Combine Results"
+        }
+      },
+      {
+        "id": "synthesizer-1",
+        "type": "agent",
+        "position": { "x": 1350, "y": 250 },
+        "data": {
+          "label": "Synthesize Research",
+          "provider": "anthropic",
+          "model": "claude-sonnet-4-20250514",
+          "systemPrompt": "You are a research synthesis expert. Analyze the provided research data and create a comprehensive, well-structured report. Include key findings, analysis, and conclusions.",
+          "temperature": 0.5,
+          "maxTokens": 4096
+        }
+      },
+      {
+        "id": "output-1",
+        "type": "output",
+        "position": { "x": 1600, "y": 250 },
+        "data": {
+          "label": "Research Report"
+        }
+      }
+    ],
+    "edges": [
+      { "id": "e1", "source": "input-1", "target": "planner-1", "type": "smoothstep" },
+      { "id": "e2", "source": "planner-1", "target": "loop-1", "type": "smoothstep" },
+      { "id": "e3", "source": "loop-1", "target": "http-1", "type": "smoothstep", "sourceHandle": "body" },
+      { "id": "e4", "source": "loop-1", "target": "scraper-1", "type": "smoothstep", "sourceHandle": "body" },
+      { "id": "e5", "source": "http-1", "target": "merge-1", "type": "smoothstep" },
+      { "id": "e6", "source": "scraper-1", "target": "merge-1", "type": "smoothstep" },
+      { "id": "e7", "source": "merge-1", "target": "synthesizer-1", "type": "smoothstep" },
+      { "id": "e8", "source": "synthesizer-1", "target": "output-1", "type": "smoothstep" }
+    ]
+  }
+}
