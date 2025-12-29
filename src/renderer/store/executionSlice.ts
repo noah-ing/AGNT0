@@ -36,12 +36,65 @@ const initialState: ExecutionState = {
 
 export const startExecution = createAsyncThunk(
   'execution/start',
-  async ({ workflowId, input }: { workflowId: string; input?: unknown }) => {
+  async ({ workflowId, input }: { workflowId: string; input?: unknown }, { dispatch, getState }) => {
     if (window.agnt0) {
       const result = await window.agnt0.execution.run(workflowId, input);
       return result as { id: string };
     }
-    return { id: `exec-${Date.now()}` };
+
+    // Mock execution for dev mode - simulate workflow running
+    const execId = `exec-${Date.now()}`;
+    const state = getState() as { editor: { nodes: { id: string; type: string }[] } };
+    const nodes = state.editor.nodes;
+
+    // Simulate node execution with delays
+    setTimeout(async () => {
+      for (let i = 0; i < nodes.length; i++) {
+        const node = nodes[i];
+
+        // Mark node as running
+        dispatch(setNodeState({
+          nodeId: node.id,
+          state: { status: 'running', startedAt: new Date().toISOString() }
+        }));
+        dispatch(addLog({
+          timestamp: new Date().toISOString(),
+          level: 'info',
+          nodeId: node.id,
+          message: `Executing ${node.type} node...`
+        }));
+
+        // Simulate processing time
+        await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 400));
+
+        // Mark node as completed
+        dispatch(setNodeState({
+          nodeId: node.id,
+          state: {
+            status: 'completed',
+            startedAt: new Date().toISOString(),
+            completedAt: new Date().toISOString(),
+            output: { result: `Output from ${node.type}` }
+          }
+        }));
+        dispatch(addLog({
+          timestamp: new Date().toISOString(),
+          level: 'info',
+          nodeId: node.id,
+          message: `${node.type} node completed successfully`
+        }));
+      }
+
+      // Complete execution
+      dispatch(addLog({
+        timestamp: new Date().toISOString(),
+        level: 'info',
+        message: 'Workflow execution completed!'
+      }));
+      dispatch(executionSlice.actions.completeExecution());
+    }, 100);
+
+    return { id: execId };
   }
 );
 
@@ -102,6 +155,9 @@ const executionSlice = createSlice({
     },
     clearNodeStates: (state) => {
       state.nodeStates = {};
+    },
+    completeExecution: (state) => {
+      state.isRunning = false;
     },
   },
   extraReducers: (builder) => {

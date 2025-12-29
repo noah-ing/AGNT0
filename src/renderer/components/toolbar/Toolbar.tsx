@@ -18,7 +18,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { useReactFlow } from 'reactflow';
-import { createWorkflow, saveCurrentWorkflow } from '../../store/workflowSlice';
+import { createWorkflow, saveCurrentWorkflow, updateWorkflow } from '../../store/workflowSlice';
 import { startExecution, stopExecution } from '../../store/executionSlice';
 import { clearNodes } from '../../store/editorSlice';
 import type { RootState, AppDispatch } from '../../store';
@@ -112,8 +112,16 @@ const Toolbar: React.FC<ToolbarProps> = ({ onOpenSettings, onToggleLogs, showLog
         <input
           type="text"
           value={currentWorkflow?.name || 'Untitled Workflow'}
-          onChange={() => {}}
-          className="bg-transparent text-center text-cyber-text-primary font-medium focus:outline-none focus:text-cyber-accent-blue"
+          onChange={(e) => {
+            if (currentWorkflow) {
+              dispatch(updateWorkflow({
+                id: currentWorkflow.id,
+                updates: { name: e.target.value }
+              }));
+            }
+          }}
+          className="bg-transparent text-center text-cyber-text-primary font-medium focus:outline-none focus:text-cyber-accent-blue border-b border-transparent focus:border-cyber-accent-blue transition-colors px-2"
+          placeholder="Workflow name"
         />
         {nodes.length > 0 && (
           <span className="text-xs text-cyber-text-muted">

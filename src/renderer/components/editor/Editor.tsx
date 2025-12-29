@@ -12,6 +12,7 @@ import ReactFlow, {
   applyEdgeChanges,
   addEdge,
   BackgroundVariant,
+  useReactFlow,
 } from 'reactflow';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -53,6 +54,7 @@ const nodeTypes = {
 
 const Editor: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const { screenToFlowPosition } = useReactFlow();
   const nodes = useSelector((state: RootState) => state.editor.nodes);
   const edges = useSelector((state: RootState) => state.editor.edges);
   const nodeStates = useSelector((state: RootState) => state.execution.nodeStates);
@@ -161,15 +163,27 @@ const Editor: React.FC = () => {
       const type = event.dataTransfer.getData('application/agnt0-node-type');
       if (!type) return;
 
-      const reactFlowBounds = (event.target as HTMLElement)
-        .closest('.react-flow')
-        ?.getBoundingClientRect();
+      // Convert screen coordinates to flow coordinates (accounts for zoom/pan)
+      const position = screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
 
-      if (!reactFlowBounds) return;
-
-      const position = {
-        x: event.clientX - reactFlowBounds.left,
-        y: event.clientY - reactFlowBounds.top,
+      // Generate readable label based on node type
+      const labelMap: Record<string, string> = {
+        input: 'Input',
+        output: 'Output',
+        agent: 'AI Agent',
+        tool: 'Tool',
+        condition: 'Condition',
+        loop: 'Loop',
+        code: 'Code',
+        prompt: 'Prompt',
+        http: 'HTTP Request',
+        transform: 'Transform',
+        parallel: 'Parallel',
+        merge: 'Merge',
+        sensor: 'Webcam',
       };
 
       const newNode: Node = {
@@ -177,7 +191,7 @@ const Editor: React.FC = () => {
         type,
         position,
         data: {
-          label: type.charAt(0).toUpperCase() + type.slice(1),
+          label: labelMap[type] || type.charAt(0).toUpperCase() + type.slice(1),
         },
       };
 
@@ -193,7 +207,7 @@ const Editor: React.FC = () => {
         );
       }
     },
-    [nodes, dispatch, currentWorkflow]
+    [nodes, dispatch, currentWorkflow, screenToFlowPosition]
   );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -258,7 +272,6 @@ const Editor: React.FC = () => {
       {nodes.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="text-center">
-            <div className="text-6xl mb-4">🔮</div>
             <h2 className="text-2xl font-bold gradient-text mb-2">
               Start Building Your Workflow
             </h2>

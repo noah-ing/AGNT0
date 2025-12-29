@@ -101,7 +101,9 @@ body {
   background: linear-gradient(180deg, rgba(26, 26, 37, 0.95) 0%, rgba(21, 21, 31, 0.98) 100%);
   border: 1px solid #2a2a3a;
   border-radius: 12px;
-  min-width: 200px;
+  min-width: 180px;
+  max-width: 280px;
+  width: auto;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   transition: all 0.2s ease;
 }

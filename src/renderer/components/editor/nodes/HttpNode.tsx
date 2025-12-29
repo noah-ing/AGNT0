@@ -37,9 +37,9 @@ const HttpNode: React.FC<NodeProps> = ({ data, selected }) => {
         >
           <Globe size={18} style={{ color }} />
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="font-medium text-sm text-cyber-text-primary truncate">
-            {data.label || 'HTTP Request'}
+        <div className="flex-1">
+          <div className="font-medium text-sm text-cyber-text-primary">
+            {data.label || 'HTTP'}
           </div>
           <div className="flex items-center gap-2 text-xs">
             <span
